@@ -6,6 +6,8 @@ import vueTextareaAutosize from 'vue-textarea-autosize';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 
+Vue.use(vueTextareaAutosize)
+
 const firebaseConfig = {
   apiKey: "AIzaSyCjACjZOJOiGPJRVxkKUO1k6e4A7QxLwdw",
   authDomain: "txoko-booking.firebaseapp.com",
