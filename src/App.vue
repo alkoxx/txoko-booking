@@ -61,7 +61,7 @@
 
       <v-row>        
         <v-col>
-          <Calendar />
+          <router-view />
         </v-col>
       </v-row>
     </v-container>
@@ -69,15 +69,8 @@
 </template>
 
 <script>
-import Calendar from './components/Calendar'
-
 export default {
   name: 'App',
-
-  components: {
-    Calendar,
-  },
-
   data: () => ({    
       drawer: false,    
   }),

@@ -45,13 +45,25 @@
       <v-dialog
         v-model="dialog"
         width="500"
+        @click:outside="cancelDialog"
       >
         <v-card>
-          <v-container>
-            <v-card-title class="headline grey lighten-2">
-              Add event
-            </v-card-title>
-            
+          <v-toolbar
+            :color="selectedEvent.color"
+            dark
+          >
+            <v-btn
+              icon
+              @click="deleteEvent(selectedEvent)"
+            >
+              <v-icon>mdi-delete</v-icon>
+            </v-btn>
+            <v-toolbar-title v-html="Object.entries(selectedEvent).length === 0 ? 'Add Event' : selectedEvent.name" />
+          </v-toolbar>
+
+          <v-container
+            v-if="currentlyEditing != null || Object.entries(selectedEvent).length === 0"
+          >
             <v-form
               @submit.prevent="addEvent"
             >
@@ -110,92 +122,47 @@
                 value="dinner"
                 label="DINNER"
               />
-                
-              <v-btn
-                type="submit"
-                color="primary"
-                @click.stop="dialog = false"
-              >
-                Save
-              </v-btn>
+
+              <v-card-actions>
+                <v-spacer />
+                <v-btn
+                  v-if="currentlyEditing == null"
+                  type="submit"
+                  color="green darken-1"
+                  text
+                  @click.stop="dialog = false"
+                >
+                  Save
+                </v-btn>
+                <v-btn
+                  v-else
+                  text
+                  color="green darken-1"
+                  @click="updateEvent(selectedEvent)"
+                >
+                  Update
+                </v-btn>
+              </v-card-actions>
             </v-form>
-          </v-container>          
+          </v-container>
+          
+          <v-container v-else>
+            <v-card-text>{{ eventData.start }}</v-card-text>
+
+            <v-card-actions>
+              <v-spacer />
+              <v-btn
+                color="green darken-1"
+                text
+                @click="currentlyEditing = selectedEvent.id"
+              >
+                Edit
+              </v-btn>
+            </v-card-actions>
+          </v-container>
         </v-card>
       </v-dialog>
 
-      <!-- Add show menu -->
-
-      <v-menu
-        v-model="selectedOpen"
-        :close-on-content-click="false"
-        :activator="selectedElement"
-        offset-x
-      >
-        <v-card
-          color="grey lighten-4"
-          min-width="350px"
-          flat
-        >
-          <v-toolbar
-            :color="selectedEvent.color"
-            dark
-          >
-            <v-btn
-              icon
-              @click="deleteEvent(selectedEvent)"
-            >
-              <v-icon>mdi-delete</v-icon>
-            </v-btn>
-            <v-toolbar-title v-html="selectedEvent.name" />
-          </v-toolbar>
-          <v-card-text v-if="currentlyEditing == null">
-            <span v-html="selectedEvent.name" />
-            <span v-html="selectedEvent.details" />
-          </v-card-text>
-          <v-card-text v-else>
-            <v-switch
-              v-model="eventData.name"
-              value="breakfast"
-              label="BREAKFAST"
-            />
-            <v-switch
-              v-model="eventData.name"
-              value="lunch"
-              label="LUNCH"
-            />
-            <v-switch
-              v-model="eventData.name"
-              value="dinner"
-              label="DINNER"
-            />
-          </v-card-text>
-          <v-card-actions>
-            <v-btn
-              text
-              color="secondary"
-              @click.prevent="cancelDialog"
-            >
-              Cancel
-            </v-btn>
-            <v-btn
-              v-if="currentlyEditing == null"
-              text
-              color="primary"
-              @click.prevent="editEvent(selectedEvent)"
-            >
-              Edit
-            </v-btn>
-            <v-btn
-              v-if="currentlyEditing != null"
-              text
-              color="primary"
-              @click="updateEvent(selectedEvent)"
-            >
-              Update
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-menu>
       <v-sheet height="600">
         <v-calendar
           ref="calendar"
@@ -242,7 +209,15 @@
       editEvent(selEv){
         this.currentlyEditing = selEv.id
       },
-      showEvent ({ nativeEvent, event }) {
+      showEvent({ nativeEvent, event }){
+        this.selectedEvent = event
+        this.updateEventData(event)
+        this.currentlyEditing = null
+
+        this.dialog = true;
+        nativeEvent.stopPropagation()
+      },
+      showEventOld ({ nativeEvent, event }) {
         console.log(event)
         console.log(nativeEvent)
         
@@ -272,7 +247,6 @@
         } catch (error) {
           console.log(error)
         }
-        //selEv.name = this.eventData.name;
         this.cancelDialog()
         this.getEvents()
       },
@@ -328,9 +302,11 @@
         this.dialog = true;
       },
       cancelDialog(){
-        this.selectedOpen = false
-        this.currentlyEditing = null;
-        this.selectedElement = null;
+        this.dialog = false
+        setTimeout(() => {
+            this.currentlyEditing = null;
+            this.selectedEvent = {};
+          }, 100)        
       },
       updateEventData(event){
         this.eventData.name = event.name
