@@ -28,10 +28,18 @@ export const db = firebase.firestore();
 
 Vue.config.productionTip = false
 
-new Vue({
-  vuetify,
-  firebase,
-  router,
-  vueTextareaAutosize,
-  render: h => h(App)
-}).$mount('#app')
+let app = '';
+
+firebase.auth().onAuthStateChanged(() => {
+  if(!app){
+    app = new Vue({
+      vuetify,
+      firebase,
+      router,
+      vueTextareaAutosize,
+      render: h => h(App)
+    }).$mount('#app')
+  }
+})
+
+

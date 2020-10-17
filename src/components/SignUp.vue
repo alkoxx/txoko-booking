@@ -5,7 +5,7 @@
   >
     <v-card-text>
       <v-form
-        ref="loginForm"
+        ref="signUpForm"
       >
         <v-row>
           <v-col cols="12">
@@ -37,24 +37,13 @@
               x-large
               block
               color="success"
-              @click="login"
+              @click="signUp"
             >
-              Login
-            </v-btn>
-            <v-btn
-              x-large
-              block
-              color="secondary"
-              @click="socialLogin"
-            >
-              Sign in with google 
-              <v-icon right>
-                mdi-google
-              </v-icon>
+              Sign up
             </v-btn>
             <p>
-              <router-link to="/sign-up">
-                Create account
+              <router-link to="/login">
+                Back to login
               </router-link>
             </p>
           </v-col>
@@ -68,7 +57,7 @@
 import firebase from 'firebase';
 
 export default {
-    name: 'Login',
+    name: 'SignUp',
     data() {
         return {
             email: '',
@@ -78,22 +67,14 @@ export default {
         }
     },
     methods: {
-      login(){
-        firebase.auth().signInWithEmailAndPassword(this.email,this.password).then(
-          () => {
-            this.$router.replace('calendar')            
+      signUp(){
+        firebase.auth().createUserWithEmailAndPassword(this.email, this.password).then(
+          function(user){
+            alert('Account created ' + user);
         },
-        (err) => {
+        function (err){
           alert('Oops. ' + err.message)
         });
-      },
-      socialLogin(){
-        const provider = new firebase.auth.GoogleAuthProvider();
-        firebase.auth().signInWithPopup(provider).then(() => {
-          this.$router.replace('calendar')
-        }).catch((err) =>{
-          alert('Ooops...' + err.message)
-        })
       }
     }
 }
