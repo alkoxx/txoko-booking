@@ -217,28 +217,6 @@
         this.dialog = true;
         nativeEvent.stopPropagation()
       },
-      showEventOld ({ nativeEvent, event }) {
-        console.log(event)
-        console.log(nativeEvent)
-        
-        const open = () => {
-          this.selectedEvent = event
-          this.updateEventData(event)
-          this.currentlyEditing = null
-          this.selectedElement = nativeEvent.target
-          setTimeout(() => {
-            this.selectedOpen = true
-          }, 10)
-        }
-        
-        if (this.selectedOpen) {
-          this.selectedOpen = false
-          setTimeout(open, 10)
-        } else {
-          open()
-        }
-        nativeEvent.stopPropagation()        
-      },
       async updateEvent(selEv){
         try {
             await db.collection('events').doc(selEv.id).update({
@@ -248,7 +226,7 @@
           console.log(error)
         }
         this.cancelDialog()
-        this.getEvents()
+        //this.getEvents()
       },
       async addEvent(){
         try {
@@ -263,7 +241,7 @@
         } catch (error) {
           console.log(error);
         }
-        this.getEvents();
+        //this.getEvents();
       },
       async deleteEvent(selEv){
         try {
@@ -272,21 +250,31 @@
           console.log(error)
         }
         this.cancelDialog();
-        this.getEvents();
+        //this.getEvents();
       },
       async getEvents(){
         const events = [];
         try {
+          await db.collection('events').onSnapshot(snapshot => {            
+            events.length = 0
+            snapshot.forEach(doc => {
+              let eventData = doc.data();
+              eventData.id = doc.id;
+              events.push(eventData);
+            })
+          })
+          /*
           const snapshot = await db.collection('events').get();
           snapshot.forEach(doc => {
             let eventData = doc.data();
             eventData.id = doc.id;
             events.push(eventData);
           })
+          */
         } catch (error) {
           console.log(error);
         }
-        this.events = events
+        this.events = events        
       },
       setToday () {
         this.focus = ''
