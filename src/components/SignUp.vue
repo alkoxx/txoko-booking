@@ -55,6 +55,8 @@
 
 <script>
 import firebase from 'firebase';
+import {db} from '../main';
+import randomColor from '../utils/colorMaker'
 
 export default {
     name: 'SignUp',
@@ -69,12 +71,25 @@ export default {
     methods: {
       signUp(){
         firebase.auth().createUserWithEmailAndPassword(this.email, this.password).then(
-          function(user){
-            alert('Account created ' + user);
+          () => {
+            this.createUser()
+            this.$router.replace('calendar')
         },
         function (err){
           alert('Oops. ' + err.message)
         });
+      },
+      async createUser(){
+        const currentUser = firebase.auth().currentUser         
+        
+        try {
+          await db.collection('users').doc(currentUser.uid).set({
+            name: currentUser.email.split('@')[0],
+            color: randomColor(),
+          })
+        } catch (error) {
+          console.log(error)
+        }               
       }
     }
 }

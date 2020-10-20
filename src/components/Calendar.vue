@@ -170,7 +170,7 @@
           type="month"
           color="primary"
           :events="events"
-          event-color="blue"
+          :event-color="getEventColor"
           @click:event="showEvent"
           @click:date="showDialog"
         />
@@ -181,6 +181,7 @@
 
 <script>
   import {db} from '../main';
+  import firebase from 'firebase';
 
   export default {
     data: () => ({
@@ -192,6 +193,8 @@
       events: [],
       eventData: {
         name: '',
+        color: '',
+        userId: '',
         start: new Date().toISOString().substr(0, 10)
       },
       dateMenu: false,
@@ -232,6 +235,14 @@
         try {
           //TODO: Add validation
           if(this.eventData.name != null){
+            const userId = firebase.auth().currentUser.uid
+            const docRef = db.collection('users').doc(userId)
+            const doc = await docRef.get()
+            console.log(doc)
+
+            this.eventData.userId = userId
+            //this.eventData.color = doc.data().color
+
             await db.collection('events').add(
               this.eventData
             );
@@ -262,15 +273,7 @@
               eventData.id = doc.id;
               events.push(eventData);
             })
-          })
-          /*
-          const snapshot = await db.collection('events').get();
-          snapshot.forEach(doc => {
-            let eventData = doc.data();
-            eventData.id = doc.id;
-            events.push(eventData);
-          })
-          */
+          })          
         } catch (error) {
           console.log(error);
         }
@@ -299,7 +302,10 @@
       updateEventData(event){
         this.eventData.name = event.name
         this.eventData.start = event.start
-      } 
+      },
+      getEventColor(event){
+        return event.color
+      }
     },
   }
 </script>

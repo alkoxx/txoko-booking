@@ -78,7 +78,7 @@ import firebase from 'firebase/app';
 export default {
     name: 'GeneralLayout',
     data: () => ({
-      drawer: false,
+      drawer: false,      
     }),
     methods: {
       logout: function(){
