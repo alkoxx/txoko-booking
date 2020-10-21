@@ -53,8 +53,10 @@
             dark
           >
             <v-btn
+              v-if="currentlyEditing != null"
               icon
-              @click="deleteEvent(selectedEvent)"
+              @click="
+                deleteEvent(selectedEvent)"
             >
               <v-icon>mdi-delete</v-icon>
             </v-btn>
@@ -241,7 +243,7 @@
             console.log(doc)
 
             this.eventData.userId = userId
-            //this.eventData.color = doc.data().color
+            this.eventData.color = doc.data().color
 
             await db.collection('events').add(
               this.eventData
@@ -266,6 +268,7 @@
       async getEvents(){
         const events = [];
         try {
+          //TODO: Use vuex to save unsuscribe function and call it when log out
           await db.collection('events').onSnapshot(snapshot => {            
             events.length = 0
             snapshot.forEach(doc => {
@@ -273,7 +276,7 @@
               eventData.id = doc.id;
               events.push(eventData);
             })
-          })          
+          })
         } catch (error) {
           console.log(error);
         }
