@@ -2,15 +2,11 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './routes/index'
 import vuetify from './plugins/vuetify';
-import vueTextareaAutosize from 'vue-textarea-autosize';
-import vueRouter from 'vue-router'
-
 
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 
-Vue.use(vueTextareaAutosize)
-Vue.use(vueRouter)
+import {store} from './store/store'
 
 const firebaseConfig = {
   apiKey: "AIzaSyCjACjZOJOiGPJRVxkKUO1k6e4A7QxLwdw",
@@ -29,14 +25,13 @@ export const db = firebase.firestore();
 Vue.config.productionTip = false
 
 let app = '';
-
 firebase.auth().onAuthStateChanged(() => {
   if(!app){
     app = new Vue({
       vuetify,
       firebase,
       router,
-      vueTextareaAutosize,
+      store,
       render: h => h(App)
     }).$mount('#app')
   }

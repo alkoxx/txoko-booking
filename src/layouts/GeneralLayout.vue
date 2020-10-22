@@ -7,6 +7,9 @@
       <v-app-bar-nav-icon @click="drawer = !drawer" />
       <v-toolbar-title>Txoko booking</v-toolbar-title>
       <v-spacer />
+
+      <p>{{ this.$store.state.userData.username }}</p>
+
       <v-btn icon>
         <v-icon @click="logout">
           mdi-logout

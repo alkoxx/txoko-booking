@@ -71,17 +71,17 @@ export default {
     methods: {
       signUp(){
         firebase.auth().createUserWithEmailAndPassword(this.email, this.password).then(
-          () => {
-            this.createUser()
+          () => {            
+            this.saveUser()
             this.$router.replace('calendar')
         },
         function (err){
           alert('Oops. ' + err.message)
         });
       },
-      async createUser(){
-        const currentUser = firebase.auth().currentUser         
-        
+      async saveUser(){
+        const currentUser = firebase.auth().currentUser
+        this.$store.commit('saveUserData', currentUser)
         try {
           await db.collection('users').doc(currentUser.uid).set({
             name: currentUser.email.split('@')[0],

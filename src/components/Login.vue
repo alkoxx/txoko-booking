@@ -81,8 +81,10 @@ export default {
       login(){
         firebase.auth().signInWithEmailAndPassword(this.email,this.password).then(
           () => {
-            this.$router.replace('calendar')            
-        },
+            const currentUser = firebase.auth().currentUser            
+            this.$store.commit('saveUserData', currentUser)
+            this.$router.replace('calendar')
+          },
         (err) => {
           alert('Oops. ' + err.message)
         });
