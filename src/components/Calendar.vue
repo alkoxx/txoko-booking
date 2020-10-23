@@ -53,7 +53,7 @@
             dark
           >
             <v-btn
-              v-if="currentlyEditing != null"
+              v-if="currentlyEditing != null && hasPermission(selectedEvent)"
               icon
               @click="
                 deleteEvent(selectedEvent)"
@@ -61,6 +61,13 @@
               <v-icon>mdi-delete</v-icon>
             </v-btn>
             <v-toolbar-title v-html="Object.entries(selectedEvent).length === 0 ? 'Add Event' : selectedEvent.name" />
+            <v-spacer />
+            <v-btn
+              icon
+              @click="cancelDialog"
+            >
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
           </v-toolbar>
 
           <v-container
@@ -151,7 +158,7 @@
           <v-container v-else>
             <v-card-text>{{ eventData.start }}</v-card-text>
 
-            <v-card-actions>
+            <v-card-actions v-if="hasPermission(selectedEvent)">
               <v-spacer />
               <v-btn
                 color="green darken-1"
@@ -231,12 +238,11 @@
           console.log(error)
         }
         this.cancelDialog()
-        //this.getEvents()
       },
       async addEvent(){
         try {
           //TODO: Add validation
-          if(this.eventData.name != null){
+          if(this.eventData.name != null && this.eventData.start != null){
             const userId = firebase.auth().currentUser.uid
             const docRef = db.collection('users').doc(userId)
             const doc = await docRef.get()
@@ -254,7 +260,6 @@
         } catch (error) {
           console.log(error);
         }
-        //this.getEvents();
       },
       async deleteEvent(selEv){
         try {
@@ -263,7 +268,6 @@
           console.log(error)
         }
         this.cancelDialog();
-        //this.getEvents();
       },
       async getEvents(){
         const events = [];
@@ -274,8 +278,9 @@
             snapshot.forEach(doc => {
               let eventData = doc.data();
               eventData.id = doc.id;
-              events.push(eventData);
+              events.push(eventData);              
             })
+            this.$store.dispatch('setUserEvents', events)
           })
         } catch (error) {
           console.log(error);
@@ -308,6 +313,9 @@
       },
       getEventColor(event){
         return event.color
+      },
+      hasPermission(event){
+        return this.$store.state.userData.userId === event.userId
       }
     },
   }

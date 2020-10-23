@@ -40,7 +40,11 @@
 
           <v-list-item>
             <v-list-item-content>
-              <v-list-item-title>April 10...</v-list-item-title>       
+              <template v-for="(userEvent, key) in this.$store.state.userEvents">
+                <v-list-item-title :key="key">
+                  {{ userEvent.start }} {{ userEvent.name }}
+                </v-list-item-title>
+              </template>
             </v-list-item-content>
           </v-list-item>
         </v-list-group>
