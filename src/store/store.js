@@ -9,7 +9,8 @@ export const store = new Vuex.Store({
             userId: null,
             username: null
         },
-        userEvents: []
+        userEvents: [],
+        unsubscribe: null,
     },
     mutations: {
         saveUserData: (state, currentUser) => {
@@ -22,15 +23,11 @@ export const store = new Vuex.Store({
         }
     },
     actions: {
-        setUserEvents: ({state, commit}, events) => {
-            
+        setUserEvents: ({state, commit}, events) => {            
             const userEvents = events.filter(event => {
                                 return event.userId == state.userData.userId &&
                                 event.start >= new Date().toISOString().substr(0, 10)
             })
-
-
-            console.log(userEvents)
             commit('setUserEvents', userEvents)
         }
     }

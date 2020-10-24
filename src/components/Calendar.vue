@@ -190,7 +190,7 @@
 
 <script>
   import {db} from '../main';
-  import firebase from 'firebase';
+  //import firebase from 'firebase';
 
   export default {
     data: () => ({
@@ -231,9 +231,14 @@
       },
       async updateEvent(selEv){
         try {
+          if(this.eventData.name != null && this.eventData.start != null && !this.eventExists()){
             await db.collection('events').doc(selEv.id).update({
-            name: this.eventData.name
-          })
+              name: this.eventData.name,
+              start: this.eventData.start
+            })
+          }else{
+            console.log('Already exists or missing data')
+          }
         } catch (error) {
           console.log(error)
         }
@@ -242,11 +247,11 @@
       async addEvent(){
         try {
           //TODO: Add validation
-          if(this.eventData.name != null && this.eventData.start != null){
-            const userId = firebase.auth().currentUser.uid
+          if(this.eventData.name != null && this.eventData.start != null && !this.eventExists() ){
+            const userId = this.$store.state.userData.userId
+            //Get user data
             const docRef = db.collection('users').doc(userId)
             const doc = await docRef.get()
-            console.log(doc)
 
             this.eventData.userId = userId
             this.eventData.color = doc.data().color
@@ -254,6 +259,8 @@
             await db.collection('events').add(
               this.eventData
             );
+          }else{
+            console.log('Already exists or missing data')
           }
           this.eventData.start = null;
           this.eventData.name = null;
@@ -273,7 +280,7 @@
         const events = [];
         try {
           //TODO: Use vuex to save unsuscribe function and call it when log out
-          await db.collection('events').onSnapshot(snapshot => {            
+          const unsubscribe = await db.collection('events').onSnapshot(snapshot => {
             events.length = 0
             snapshot.forEach(doc => {
               let eventData = doc.data();
@@ -282,6 +289,7 @@
             })
             this.$store.dispatch('setUserEvents', events)
           })
+          this.$store.state.unsubscribe = unsubscribe
         } catch (error) {
           console.log(error);
         }
@@ -316,6 +324,10 @@
       },
       hasPermission(event){
         return this.$store.state.userData.userId === event.userId
+      },
+      eventExists(){
+        const existingEvent = this.events.filter( event => event.name === this.eventData.name && event.start === this.eventData.start)
+        return existingEvent.length > 0
       }
     },
   }
