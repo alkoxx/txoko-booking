@@ -19,13 +19,7 @@ const router = new Router({
             name: 'login',
             component: Login,
             meta: { layout: LoginLayout }
-        },
-        {
-            path: '/',
-            name: 'login',
-            component: Login,
-            meta: { layout: LoginLayout }
-        },
+        },        
         {
             path: '/sign-up',
             name: 'signUp',

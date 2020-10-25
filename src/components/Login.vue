@@ -1,67 +1,116 @@
 <template>
-  <v-card
-    max-width="400"
-    class="mx-auto"
+  <v-row
+    align="center"
+    justify="center"
   >
+    <v-col
+      cols="12"
+      sm="8"
+      md="8"
+    >
+      <v-card class="elevation-12">
+        <v-window :v-model="window">
+          <v-window-item :value="1">
+            <v-row>
+              <v-col
+                cols="12"
+                md="8"
+              >
+                <v-card-text class="mt-12">
+                  <h1>Sign in</h1>
+                  <div
+                    class="text-center"
+                    mt-4
+                  >
+                    <v-btn
+                      fab
+                      color="black"
+                      outlined
+                      @click="socialLogin"
+                    >
+                      <v-icon>
+                        mdi-google
+                      </v-icon>
+                    </v-btn>
+                  </div>
+                  <v-form>
+                    <v-text-field
+                      v-model="email"
+                      label="Email"
+                      name="Email"
+                      prepend-icon="mdi-email"
+                      type="text"
+                      color="teal accent-3"
+                      required
+                    />
+                    <v-text-field
+                      v-model="password"
+                      label="Password"
+                      name="Password"
+                      prepend-icon="mdi-lock"
+                      :append-icon="showPass?'mdi-eye':'mdi-eye-off'"
+                      :type="showPass ? 'text' : 'password'"
+                      color="teal accent-3"
+                      required
+                      @click:append="showPass = !showPass"
+                    />
+                  </v-form>
+                </v-card-text>
+                <div class="text-center mt-3">
+                  <v-btn
+                    rounded
+                    color="teal accent-3"
+                    dark
+                    @click="login"
+                  >
+                    SIGN IN
+                  </v-btn>
+                </div>
+              </v-col>
+              <v-col
+                cols="12"
+                md="4"
+                class="teal accent-3"
+              >
+                <v-card-text class="white--text mt-12">
+                  <h1 class="text-center text-h4">
+                    Hello, Friends !
+                  </h1>
+                  <h5 class="text-center">
+                    Enter your personal details
+                  </h5>
+                </v-card-text>
+                <div class="text-center mt-3">
+                  <v-btn
+                    rounded
+                    outlined                    
+                    dark
+                    @click="window++"
+                  >
+                    SIGN UP
+                  </v-btn>
+                </div>
+              </v-col>
+            </v-row>
+          </v-window-item>
+          <v-window-item :value="2" />
+        </v-window>
+      </v-card>
+    </v-col>
     <v-card-text>
-      <v-form
-        ref="loginForm"
-      >
-        <v-row>
-          <v-col cols="12">
-            <v-text-field
-              v-model="email"
-              label="E-mail"
-              required
-            />
-          </v-col>
-          <v-col cols="12">
-            <v-text-field
-              v-model="password"
-              :append-icon="show1?'eye':'eye-off'"
-              :type="show1 ? 'text' : 'password'"
-              name="input-10-1"
-              label="Password"
-              @click:append="show1 = !show1"
-            />
-          </v-col>
-          <v-spacer />
-          <v-col
-            class="d-flex"
-            cols="12"
-            sm="3"
-            xsm="12"
-            align-end
-          >
-            <v-btn
-              x-large
-              block
-              color="success"
-              @click="login"
-            >
-              Login
-            </v-btn>
-            <v-btn
-              x-large
-              block
-              color="secondary"
-              @click="socialLogin"
-            >
-              Sign in with google 
-              <v-icon right>
-                mdi-google
-              </v-icon>
-            </v-btn>
-            <p>
-              <router-link to="/sign-up">
-                Create account
-              </router-link>
-            </p>
-          </v-col>
-        </v-row>
-      </v-form>
+      <v-row>
+        <v-col
+          class="d-flex justify-center"            
+        >            
+          <p>
+            <router-link to="/sign-up">
+              Create account
+            </router-link>
+          </p>
+        </v-col>
+      </v-row>
     </v-card-text>
-  </v-card>
+  </v-row>
 </template>
 
 <script>
@@ -74,7 +123,8 @@ export default {
             email: '',
             password: '',            
             error: null,
-            show1: false
+            showPass: false,
+            window: 1
         }
     },
     methods: {

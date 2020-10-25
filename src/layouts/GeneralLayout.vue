@@ -34,7 +34,7 @@
           </template>
           <template #activator>
             <v-list-item-content>
-              <v-list-item-title>My events</v-list-item-title>              
+              <v-list-item-title>My future events</v-list-item-title>              
             </v-list-item-content>
           </template>
 

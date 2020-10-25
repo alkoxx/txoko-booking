@@ -1,5 +1,9 @@
 <template>
-  <div>
+  <v-container class="fill-height">
     <router-view />
-  </div>
+  </v-container>
 </template>  
+
+<style scoped>
+  
+</style>
