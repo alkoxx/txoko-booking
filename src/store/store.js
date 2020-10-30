@@ -7,16 +7,16 @@ export const store = new Vuex.Store({
     state: {
         userData: {
             userId: null,
-            username: null
+            email: null
         },
         userEvents: [],
         unsubscribe: null,
+        currentDate: null,
     },
     mutations: {
         saveUserData: (state, currentUser) => {
-            const username = currentUser.email.split('@')[0]
             state.userData.userId = currentUser.uid
-            state.userData.username = username
+            state.userData.email = currentUser.email
         },
         setUserEvents: (state, userEvents) => {
             state.userEvents = userEvents

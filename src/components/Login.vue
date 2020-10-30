@@ -78,7 +78,7 @@
                     Start booking !
                   </h1>
                   <h5 class="text-center">
-                    If you are new enter your personal details and create an account
+                    If you are new, enter your personal details and create an account
                   </h5>
                 </v-card-text>
                 <div class="text-center mt-3">
@@ -144,16 +144,7 @@
                       </v-icon>
                     </v-btn>
                   </div>
-                  <v-form>
-                    <v-text-field
-                      v-model="name"
-                      label="Name"
-                      name="Name"
-                      prepend-icon="mdi-human"
-                      type="text"
-                      color="light-blue darken-1"
-                      required
-                    />
+                  <v-form>                    
                     <v-text-field
                       v-model="email"
                       label="Email"
@@ -181,7 +172,7 @@
                     rounded
                     color="light-blue darken-1"
                     dark
-                    @click="login"
+                    @click="signUp"
                   >
                     SIGN UP
                   </v-btn>
@@ -197,12 +188,13 @@
 
 <script>
 import firebase from 'firebase';
+import {db} from '../main';
+import randomColor from '../utils/colorMaker'
 
 export default {
     name: 'Login',
     data() {
         return {
-            name: '',
             email: '',
             password: '',            
             error: null,
@@ -225,10 +217,35 @@ export default {
       socialLogin(){
         const provider = new firebase.auth.GoogleAuthProvider();
         firebase.auth().signInWithPopup(provider).then(() => {
+          this.saveUser()
+          const currentUser = firebase.auth().currentUser            
+          this.$store.commit('saveUserData', currentUser)
           this.$router.replace('calendar')
         }).catch((err) =>{
           alert('Ooops...' + err.message)
         })
+      },
+      signUp(){
+        firebase.auth().createUserWithEmailAndPassword(this.email, this.password).then(
+          () => {            
+            this.saveUser()
+            this.$router.replace('calendar')
+        },
+        function (err){
+          alert('Oops. ' + err.message)
+        });
+      },
+      async saveUser(){
+        const currentUser = firebase.auth().currentUser
+        this.$store.commit('saveUserData', currentUser)
+        try {
+          await db.collection('users').doc(currentUser.uid).set({
+            color: randomColor(),
+            email: currentUser.email
+          })
+        } catch (error) {
+          console.log(error)
+        }               
       }
     }
 }

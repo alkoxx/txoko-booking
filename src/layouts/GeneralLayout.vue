@@ -1,20 +1,25 @@
 <template>
-  <div>
+  <v-container>
     <v-app-bar
       dense
       dark
+      color="light-blue darken-4"
     > 
       <v-app-bar-nav-icon @click="drawer = !drawer" />
       <v-toolbar-title>Txoko booking</v-toolbar-title>
+      
       <v-spacer />
 
-      <p>{{ this.$store.state.userData.username }}</p>
-
-      <v-btn icon>
-        <v-icon @click="logout">
-          mdi-logout
-        </v-icon>
-      </v-btn>
+      <div class="white--text">
+        {{ this.$store.state.userData.email }}
+      </div>
+      <v-toolbar-items>
+        <v-btn icon>
+          <v-icon @click="logout">
+            mdi-logout
+          </v-icon>
+        </v-btn>
+      </v-toolbar-items>
     </v-app-bar>
  
     <v-navigation-drawer
@@ -41,7 +46,10 @@
           <v-list-item>
             <v-list-item-content>
               <template v-for="(userEvent, key) in this.$store.state.userEvents">
-                <v-list-item-title :key="key">
+                <v-list-item-title
+                  :key="key"
+                  @click="moveCalendar(userEvent.start)"
+                >
                   {{ userEvent.start }} {{ userEvent.name }}
                 </v-list-item-title>
               </template>
@@ -73,17 +81,21 @@
 
     <v-row>        
       <v-col>
-        <router-view />
+        <calendar ref="calendarLayout" />
       </v-col>
     </v-row>
-  </div>
+  </v-container>
 </template>
 
 <script>
 import firebase from 'firebase/app';
+import calendar from '../components/Calendar';
 
 export default {
     name: 'GeneralLayout',
+    components: {
+      calendar,
+    },
     data: () => ({
       drawer: false,      
     }),
@@ -93,6 +105,15 @@ export default {
         firebase.auth().signOut().then(() => {
           this.$router.replace('login')
         })
+      },
+      moveCalendar: function(eventDate) {
+        const curDate = this.$store.state.currentDate
+        const evDate = new Date(eventDate)
+        let months = (evDate.getFullYear() - curDate.year) * 12;
+        months -= curDate.month;
+        months += evDate.getMonth() + 1;
+        months <= 0 ? 0 : months;
+        this.$refs.calendarLayout.next(months)
       }
     }
 }

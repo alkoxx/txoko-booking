@@ -29,7 +29,7 @@
             text
             small
             color="grey darken-2"
-            @click="next"
+            @click="next(1)"
           >
             <v-icon small>
               mdi-chevron-right
@@ -118,17 +118,17 @@
               </v-menu>
               <v-switch
                 v-model="eventData.name"
-                value="breakfast"
+                value="BREAKFAST"
                 label="BREAKFAST"
               />
               <v-switch
                 v-model="eventData.name"
-                value="lunch"
+                value="LUNCH"
                 label="LUNCH"
               />
               <v-switch
                 v-model="eventData.name"
-                value="dinner"
+                value="DINNER"
                 label="DINNER"
               />
 
@@ -182,7 +182,16 @@
           :event-color="getEventColor"
           @click:event="showEvent"
           @click:date="showDialog"
-        />
+          @change="updateRange"
+        >
+          <template #event="{ event }">
+            <div
+              class="text-center"
+            >              
+              <strong>{{ event.name }}</strong> - {{ userEmail }} 
+            </div>            
+          </template>
+        </v-calendar>
       </v-sheet>
     </v-col>
   </v-row>
@@ -199,6 +208,7 @@
       selectedEvent: {},
       selectedElement: null,
       selectedOpen: false,
+      curerntMonth: null,
       events: [],
       eventData: {
         name: '',
@@ -212,8 +222,13 @@
       color: '#197602',
       currentlyEditing: null,
       dialog: false,
-      colors: ['blue', 'indigo', 'deep-purple', 'cyan', 'green', 'orange', 'grey darken-1'],
+      colors: ['blue', 'indigo', 'deep-purple', 'cyan', 'green', 'orange', 'grey darken-1']
     }),
+    computed: {
+      userEmail(){
+        return this.$store.state.userData.email
+      }
+    },
     created(){
       this.getEvents();
     },
@@ -301,8 +316,8 @@
       prev () {
         this.$refs.calendar.prev()
       },
-      next () {
-        this.$refs.calendar.next()
+      next (n) {
+        this.$refs.calendar.next(n)
       },
       showDialog({date}){
         this.eventData.start = date;
@@ -318,6 +333,9 @@
       updateEventData(event){
         this.eventData.name = event.name
         this.eventData.start = event.start
+      },
+      updateRange({ start }){
+        this.$store.state.currentDate = start
       },
       getEventColor(event){
         return event.color
