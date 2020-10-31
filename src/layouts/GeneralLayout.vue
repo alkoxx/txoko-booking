@@ -46,6 +46,8 @@
           <v-list-item>
             <v-list-item-content>
               <template v-for="(userEvent, key) in this.$store.state.userEvents">
+                <!--Poner aqui una lista normal o dar estilo al title
+                para que se vea mejor. Se podrían poner iconos de dinner, breakfast...-->
                 <v-list-item-title
                   :key="key"
                   @click="moveCalendar(userEvent.start)"
