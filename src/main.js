@@ -4,6 +4,7 @@ import router from './routes/index'
 import vuetify from './plugins/vuetify';
 
 import firebase from 'firebase/app';
+import 'firebase/auth';
 import 'firebase/firestore';
 
 import {store} from './store/store'
